@@ -56,15 +56,43 @@
             margin: 10px 0;
             color: var(--secondary-blue);
         }
+        @media print {
+            .no-print, header, .generator-card h2, .generator-card p:first-of-type, .input-group, .main-btn, h3, .result-link, p {
+                display: none !important;
+            }
+            body, .container, main {
+                background: white !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .generator-card {
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                max-width: none !important;
+            }
+            #qr-result {
+                display: block !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border: none !important;
+            }
+            #qr-frame-container {
+                margin: 0 auto !important;
+                box-shadow: none !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <header style="display: flex; justify-content: space-between; align-items: center;">
+        <header>
             <div class="logo">
                 <span class="post">QR</span><span class="family">Generator</span>
             </div>
-            <a href="index.html" style="text-decoration: none; color: var(--secondary-blue); font-size: 0.9em; font-weight: 600;">&larr; กลับหน้าหลัก</a>
         </header>
 
         <main>
@@ -75,37 +103,38 @@
                 <div class="input-group">
                     <label>ลิงก์หน้าเว็บของคุณ (GitHub Pages):</label>
                     <input type="url" id="base-url" placeholder="https://dreameraeker.github.io/FH/index.html" value="https://dreameraeker.github.io/FH/index.html">
-                    <small>* ตัวอย่าง: https://dreameraeker.github.io/FH/index.html</small>
                 </div>
 
                 <div class="input-group">
-                    <label>รูปแบบพารามิเตอร์ที่ต้องการ:</label>
-                    <div style="display: flex; gap: 20px; margin-top: 5px;">
-                        <label style="font-weight: normal; cursor: pointer;">
-                            <input type="radio" name="param-type" value="user" checked> ?user= (แนะนำ)
-                        </label>
-                        <label style="font-weight: normal; cursor: pointer;">
-                            <input type="radio" name="param-type" value="id"> ?id=
-                        </label>
-                    </div>
-                </div>
-
-                <div class="input-group">
-                    <label>รหัสสมาชิก หรือ ชื่อเล่น (ภาษาอังกฤษ):</label>
+                    <label>รหัสสมาชิก หรือ ชื่อเล่น:</label>
                     <input type="text" id="member-id" placeholder="ตัวอย่าง: 50000503 หรือ MyName" maxlength="20">
+                </div>
+
+                <div class="input-group">
+                    <label>ชื่อผู้รับ (เพื่อระบุตัวตนบนใบ QR):</label>
+                    <input type="text" id="display-name" placeholder="ตัวอย่าง: กุ๊กไก่, สมชาย (แผนกขนส่ง)" maxlength="30">
                 </div>
 
                 <button onclick="generateQR()" class="main-btn">สร้าง QR Code ทันที</button>
 
                 <div id="qr-result">
                     <h3>QR Code ของคุณพร้อมแล้ว!</h3>
-                    <p>สแกนเพื่อทดสอบ หรือบันทึกภาพไปใช้งานได้เลย</p>
+                    <p>สแกนเพื่อทดสอบ หรือบันทึกภาพไปใช้งานด้านล่างได้เลย</p>
                     
                     <div class="result-link" id="final-link"></div>
                     
-                    <img id="qr-image" src="" alt="QR Code">
+                    <!-- QR Frame Container -->
+                    <div id="qr-frame-container" style="background: white; padding: 20px; border: 15px solid #E31E24; border-radius: 20px; max-width: 320px; margin: 25px auto; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <div style="color: #E31E24; font-weight: 800; font-size: 20px; margin-bottom: 10px; font-family: 'Anuphan', sans-serif;">สมัครสมาชิก Post Family</div>
+                        
+                        <div style="background: white; padding: 10px; display: inline-block;">
+                            <img id="qr-image" src="" alt="QR Code" style="width: 220px; height: 220px; display: block;">
+                        </div>
+
+                        <div id="qr-recipient" style="margin-top: 10px; color: #666; font-size: 14px; border-top: 1px solid #EEE; padding-top: 8px;"></div>
+                    </div>
                     
-                    <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
+                    <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;" class="no-print">
                         <button onclick="window.print()" class="main-btn" style="background: #4B5563; flex: 1;">พิมพ์ QR Code</button>
                         <button onclick="copyGeneratedLink()" class="main-btn" style="background: #10B981; flex: 1;">คัดลอกลิงก์</button>
                     </div>
@@ -127,19 +156,28 @@
         function generateQR() {
             const baseUrl = document.getElementById('base-url').value;
             const memberId = document.getElementById('member-id').value;
-            const paramType = document.querySelector('input[name="param-type"]:checked').value;
+            const displayName = document.getElementById('display-name').value;
             const qrResult = document.getElementById('qr-result');
             const qrImage = document.getElementById('qr-image');
             const finalLinkDiv = document.getElementById('final-link');
+            const qrRecipient = document.getElementById('qr-recipient');
 
             if (!baseUrl || !memberId) {
                 alert('โปรดกรอกข้อมูลให้ครบถ้วนครับ');
                 return;
             }
 
-            // Create final URL
-            const finalUrl = `${baseUrl}?${paramType}=${memberId}`;
+            // Create final URL (Always use ?user= as per simplified requirement)
+            const finalUrl = `${baseUrl}?user=${memberId}`;
             finalLinkDiv.innerText = finalUrl;
+
+            // Update Display Name if provided
+            if (displayName) {
+                qrRecipient.innerText = `ผู้รับ: ${displayName}`;
+                qrRecipient.style.display = 'block';
+            } else {
+                qrRecipient.style.display = 'none';
+            }
 
             // Generate QR using API
             const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(finalUrl)}`;
@@ -154,7 +192,7 @@
         function copyGeneratedLink() {
             const link = document.getElementById('final-link').innerText;
             navigator.clipboard.writeText(link).then(() => {
-                alert('คัดลอกลิงก์เรียบร้อยแล้วครับ!');
+                alert('คัดลอกลิงก์เรียกตัวแทนเรียบร้อยครับ!');
             });
         }
     </script>

@@ -1,16 +1,27 @@
 // Check for URL parameters on load
 window.onload = function() {
     const urlParams = new URLSearchParams(window.location.search);
-    let memberId = urlParams.get('id');
+    let memberId = urlParams.get('id') || urlParams.get('user');
     
     if (memberId) {
         // Strip THP- if present in URL
         memberId = memberId.replace('THP-', '');
-        document.getElementById('ref-code').value = memberId;
-        // Optionally update the page title or header
-        const namePlaceholder = document.querySelector('.hero h1');
-        if (namePlaceholder) {
-            namePlaceholder.innerText = "ยินดีต้อนรับสู่ครอบครัวเดียวกัน";
+        const refCodeInput = document.getElementById('ref-code');
+        if (refCodeInput) {
+            refCodeInput.value = memberId;
+        }
+
+        // Update greeting if referrer is known
+        const heroTitle = document.querySelector('.hero h1');
+        const referrerDisplay = document.getElementById('referrer-name');
+        
+        if (referrerDisplay) {
+            referrerDisplay.innerText = memberId;
+            referrerDisplay.parentElement.style.display = 'block';
+        }
+
+        if (heroTitle) {
+            heroTitle.innerText = "ร่วมเป็นครอบครัวเดียวกับเรา";
         }
     }
 };

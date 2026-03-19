@@ -78,8 +78,20 @@
                 </div>
 
                 <div class="input-group">
-                    <label>รหัสสมาชิก (เฉพาะตัวเลข 8 หลัก):</label>
-                    <input type="text" id="member-id" placeholder="ตัวอย่าง: 50000503" maxlength="8">
+                    <label>รูปแบบพารามิเตอร์ที่ต้องการ:</label>
+                    <div style="display: flex; gap: 20px; margin-top: 5px;">
+                        <label style="font-weight: normal; cursor: pointer;">
+                            <input type="radio" name="param-type" value="user" checked> ?user= (แนะนำ)
+                        </label>
+                        <label style="font-weight: normal; cursor: pointer;">
+                            <input type="radio" name="param-type" value="id"> ?id=
+                        </label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>รหัสสมาชิก หรือ ชื่อเล่น (ภาษาอังกฤษ):</label>
+                    <input type="text" id="member-id" placeholder="ตัวอย่าง: 50000503 หรือ MyName" maxlength="20">
                 </div>
 
                 <button onclick="generateQR()" class="main-btn">สร้าง QR Code ทันที</button>
@@ -92,8 +104,9 @@
                     
                     <img id="qr-image" src="" alt="QR Code">
                     
-                    <div style="margin-top: 15px;">
-                        <button onclick="window.print()" class="main-btn" style="background: #4B5563;">พิมพ์ QR Code นี้</button>
+                    <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
+                        <button onclick="window.print()" class="main-btn" style="background: #4B5563; flex: 1;">พิมพ์ QR Code</button>
+                        <button onclick="copyGeneratedLink()" class="main-btn" style="background: #10B981; flex: 1;">คัดลอกลิงก์</button>
                     </div>
                 </div>
             </div>
@@ -101,9 +114,19 @@
     </div>
 
     <script>
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const user = urlParams.get('user') || urlParams.get('id');
+            if (user) {
+                document.getElementById('member-id').value = user;
+                generateQR();
+            }
+        };
+
         function generateQR() {
             const baseUrl = document.getElementById('base-url').value;
             const memberId = document.getElementById('member-id').value;
+            const paramType = document.querySelector('input[name="param-type"]:checked').value;
             const qrResult = document.getElementById('qr-result');
             const qrImage = document.getElementById('qr-image');
             const finalLinkDiv = document.getElementById('final-link');
@@ -114,7 +137,7 @@
             }
 
             // Create final URL
-            const finalUrl = `${baseUrl}?id=${memberId}`;
+            const finalUrl = `${baseUrl}?${paramType}=${memberId}`;
             finalLinkDiv.innerText = finalUrl;
 
             // Generate QR using API
@@ -125,6 +148,13 @@
             
             // Scroll to result
             qrResult.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function copyGeneratedLink() {
+            const link = document.getElementById('final-link').innerText;
+            navigator.clipboard.writeText(link).then(() => {
+                alert('คัดลอกลิงก์เรียบร้อยแล้วครับ!');
+            });
         }
     </script>
 </body>

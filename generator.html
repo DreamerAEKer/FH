@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบสร้าง QR Code - POST Family Helper</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        .generator-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 500px;
+            margin: 20px auto;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        #qr-result {
+            text-align: center;
+            margin-top: 30px;
+            display: none;
+            padding-top: 20px;
+            border-top: 1px solid #EEE;
+        }
+        #qr-image {
+            background: white;
+            padding: 15px;
+            border: 1px solid #DDD;
+            margin: 15px 0;
+            width: 200px;
+            height: 200px;
+        }
+        .result-link {
+            background: #F3F4F6;
+            padding: 10px;
+            border-radius: 8px;
+            word-break: break-all;
+            font-size: 14px;
+            margin: 10px 0;
+            color: var(--secondary-blue);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <span class="post">QR</span><span class="family">Generator</span>
+            </div>
+        </header>
+
+        <main>
+            <div class="generator-card">
+                <h2>สร้างระบบแนะนำสำหรับสมาชิก</h2>
+                <p>กรอกข้อมูลเพื่อสร้างลิงก์และ QR Code สำหรับลูกค้าครับ</p>
+
+                <div class="input-group">
+                    <label>ลิงก์หน้าเว็บของคุณ (GitHub Pages):</label>
+                    <input type="url" id="base-url" placeholder="https://dreameraeker.github.io/TT/referral.html" value="https://dreameraeker.github.io/TT/referral.html">
+                    <small>* ตัวอย่าง: https://dreameraeker.github.io/TT/referral.html</small>
+                </div>
+
+                <div class="input-group">
+                    <label>รหัสสมาชิก (เฉพาะตัวเลข 8 หลัก):</label>
+                    <input type="text" id="member-id" placeholder="ตัวอย่าง: 50000503" maxlength="8">
+                </div>
+
+                <button onclick="generateQR()" class="main-btn">สร้าง QR Code ทันที</button>
+
+                <div id="qr-result">
+                    <h3>QR Code ของคุณพร้อมแล้ว!</h3>
+                    <p>สแกนเพื่อทดสอบ หรือบันทึกภาพไปใช้งานได้เลย</p>
+                    
+                    <div class="result-link" id="final-link"></div>
+                    
+                    <img id="qr-image" src="" alt="QR Code">
+                    
+                    <div style="margin-top: 15px;">
+                        <button onclick="window.print()" class="main-btn" style="background: #4B5563;">พิมพ์ QR Code นี้</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function generateQR() {
+            const baseUrl = document.getElementById('base-url').value;
+            const memberId = document.getElementById('member-id').value;
+            const qrResult = document.getElementById('qr-result');
+            const qrImage = document.getElementById('qr-image');
+            const finalLinkDiv = document.getElementById('final-link');
+
+            if (!baseUrl || !memberId) {
+                alert('โปรดกรอกข้อมูลให้ครบถ้วนครับ');
+                return;
+            }
+
+            // Create final URL
+            const finalUrl = `${baseUrl}?id=${memberId}`;
+            finalLinkDiv.innerText = finalUrl;
+
+            // Generate QR using API
+            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(finalUrl)}`;
+            qrImage.src = qrApiUrl;
+
+            qrResult.style.display = 'block';
+            
+            // Scroll to result
+            qrResult.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

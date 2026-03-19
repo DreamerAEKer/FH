@@ -1,6 +1,13 @@
 // Check for URL parameters on load
 window.onload = function() {
     const urlParams = new URLSearchParams(window.location.search);
+    
+    // Redirect to generator if ?user is present but empty
+    if (urlParams.has('user') && !urlParams.get('user')) {
+        window.location.href = 'generator.html';
+        return;
+    }
+
     let memberId = urlParams.get('id') || urlParams.get('user');
     
     if (memberId) {
@@ -14,10 +21,11 @@ window.onload = function() {
         // Update greeting if referrer is known
         const heroTitle = document.querySelector('.hero h1');
         const referrerDisplay = document.getElementById('referrer-name');
+        const referrerInfo = document.getElementById('referrer-info');
         
-        if (referrerDisplay) {
+        if (referrerDisplay && referrerInfo) {
             referrerDisplay.innerText = memberId;
-            referrerDisplay.parentElement.style.display = 'block';
+            referrerInfo.style.display = 'block';
         }
 
         if (heroTitle) {

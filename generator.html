@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         .generator-card {
             background: white;
@@ -134,9 +135,12 @@
                         <div id="qr-recipient" style="margin-top: 10px; color: #666; font-size: 14px; border-top: 1px solid #EEE; padding-top: 8px;"></div>
                     </div>
                     
-                    <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;" class="no-print">
-                        <button onclick="window.print()" class="main-btn" style="background: #4B5563; flex: 1;">พิมพ์ QR Code</button>
-                        <button onclick="copyGeneratedLink()" class="main-btn" style="background: #10B981; flex: 1;">คัดลอกลิงก์</button>
+                    <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px; justify-content: center;" class="no-print">
+                        <div style="display: flex; gap: 10px; width: 100%;">
+                            <button onclick="window.print()" class="main-btn" style="background: #4B5563; flex: 1;">พิมพ์ QR Code</button>
+                            <button onclick="downloadQRAsImage()" class="main-btn" style="background: #2563EB; flex: 1;">ดาวน์โหลดเป็นรูปภาพ</button>
+                        </div>
+                        <button onclick="copyGeneratedLink()" class="main-btn" style="background: #10B981; width: 100%;">คัดลอกลิงก์เรียกตัวแทน</button>
                     </div>
                 </div>
             </div>
@@ -180,13 +184,48 @@
             }
 
             // Generate QR using API
+            // Add use-origin for CORS compatibility with html2canvas if needed
             const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(finalUrl)}`;
+            qrImage.crossOrigin = "anonymous"; 
             qrImage.src = qrApiUrl;
 
             qrResult.style.display = 'block';
             
             // Scroll to result
             qrResult.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function downloadQRAsImage() {
+            const element = document.getElementById('qr-frame-container');
+            const memberId = document.getElementById('member-id').value || 'qr';
+            const displayName = document.getElementById('display-name').value || '';
+            
+            // Show loading state or alert
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = 'กำลังประมวลผล...';
+            btn.disabled = true;
+
+            html2canvas(element, {
+                useCORS: true,
+                scale: 2, // Better quality
+                backgroundColor: null,
+                logging: false
+            }).then(canvas => {
+                const link = document.createElement('a');
+                const filename = displayName ? `QR_${displayName}.png` : `QR_${memberId}.png`;
+                link.download = filename;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }).catch(err => {
+                console.error('Error generating image:', err);
+                alert('เกิดข้อผิดพลาดในการสร้างรูปภาพครับ');
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
         }
 
         function copyGeneratedLink() {

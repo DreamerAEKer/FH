@@ -140,7 +140,7 @@
                             <button onclick="window.print()" class="main-btn" style="background: #4B5563; flex: 1;">พิมพ์ QR Code</button>
                             <button onclick="downloadQRAsImage()" class="main-btn" style="background: #2563EB; flex: 1;">ดาวน์โหลดเป็นรูปภาพ</button>
                         </div>
-                        <button onclick="copyGeneratedLink()" class="main-btn" style="background: #10B981; width: 100%;">คัดลอกลิงก์เรียกตัวแทน</button>
+                        <button onclick="copyGeneratedLink()" class="main-btn" style="background: #10B981; width: 100%;">คัดลอกลิงก์</button>
                     </div>
                 </div>
             </div>
@@ -231,7 +231,7 @@
         function copyGeneratedLink() {
             const link = document.getElementById('final-link').innerText;
             navigator.clipboard.writeText(link).then(() => {
-                alert('คัดลอกลิงก์เรียกตัวแทนเรียบร้อยครับ!');
+                alert('คัดลอกลิงก์เรียบร้อยครับ!');
             });
         }
     </script>

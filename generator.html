@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <style>
         .generator-card {
             background: white;
@@ -470,23 +471,28 @@
                 qrMemberCode.innerText = `THP-${cleanId}`;
             }
 
-            // Generate QR using API and convert to Data URL to avoid file:// CORS issues with html2canvas
-            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(finalUrl)}`;
-            
-            fetch(qrApiUrl)
-                .then(response => response.blob())
-                .then(blob => {
-                    const reader = new FileReader();
-                    reader.onloadend = function() {
-                        qrImage.removeAttribute('crossOrigin');
-                        qrImage.src = reader.result;
-                    };
-                    reader.readAsDataURL(blob);
-                })
-                .catch(() => {
-                    qrImage.crossOrigin = "anonymous";
-                    qrImage.src = qrApiUrl;
+            // Encode URL properly for scanning while keeping readable text in finalLinkDiv
+            let encodedUrl = `${baseUrl}?user=${encodeURIComponent(cleanId)}`;
+            if (displayName.trim()) {
+                encodedUrl += `&name=${encodeURIComponent(displayName.trim())}`;
+            }
+
+            // Generate QR locally using QRious (100% immune to CORS / file:// issues)
+            if (typeof QRious !== 'undefined') {
+                const qr = new QRious({
+                    value: encodedUrl,
+                    size: 400,
+                    level: 'M',
+                    background: 'white',
+                    foreground: 'black',
+                    padding: 12
                 });
+                qrImage.removeAttribute('crossOrigin');
+                qrImage.src = qr.toDataURL('image/png');
+            } else {
+                const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(encodedUrl)}`;
+                qrImage.src = qrApiUrl;
+            }
 
             qrResult.style.display = 'block';
             
@@ -496,7 +502,6 @@
 
         async function downloadQRAsImage() {
             const element = document.getElementById('qr-frame-container');
-            const qrImage = document.getElementById('qr-image');
             const memberId = document.getElementById('member-id').value || 'qr';
             const displayName = document.getElementById('display-name').value || '';
             
@@ -507,24 +512,10 @@
             btn.disabled = true;
 
             try {
-                // Ensure qrImage is a data URL before capturing
-                if (qrImage.src && !qrImage.src.startsWith('data:')) {
-                    const response = await fetch(qrImage.src);
-                    const blob = await response.blob();
-                    const dataUrl = await new Promise((resolve) => {
-                        const reader = new FileReader();
-                        reader.onloadend = () => resolve(reader.result);
-                        reader.readAsDataURL(blob);
-                    });
-                    qrImage.removeAttribute('crossOrigin');
-                    qrImage.src = dataUrl;
-                    await new Promise(r => setTimeout(r, 100));
-                }
-
                 const canvas = await html2canvas(element, {
                     useCORS: true,
                     allowTaint: true,
-                    scale: 2, // Better quality
+                    scale: 2, // High resolution
                     backgroundColor: null,
                     logging: false
                 });

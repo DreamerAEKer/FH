@@ -10,6 +10,13 @@ window.onload = function() {
 
     let memberId = urlParams.get('id') || urlParams.get('user');
     let referrerName = urlParams.get('name');
+    if (referrerName) {
+        try {
+            referrerName = decodeURIComponent(referrerName);
+        } catch (e) {
+            referrerName = referrerName.replace(/%20/g, ' ');
+        }
+    }
     
     if (memberId) {
         // Strip THP- if present in URL

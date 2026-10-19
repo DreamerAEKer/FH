@@ -478,18 +478,41 @@
                 encodedUrl += `&name=${encodeURIComponent(displayName.trim())}`;
             }
 
-            // Generate QR locally using QRious (100% immune to CORS / file:// issues)
+            // Generate QR locally using QRious and auto-crop asymmetric remainder pixels so it is 100% centered
             if (typeof QRious !== 'undefined') {
                 const qr = new QRious({
                     value: encodedUrl,
-                    size: 400,
+                    size: 600,
                     level: 'M',
                     background: 'white',
                     foreground: 'black',
-                    padding: 12
+                    padding: 0
                 });
+                const srcCanvas = qr.canvas;
+                const sCtx = srcCanvas.getContext('2d');
+                const imgData = sCtx.getImageData(0, 0, srcCanvas.width, srcCanvas.height).data;
+                let maxX = 0, maxY = 0;
+                for (let y = 0; y < srcCanvas.height; y++) {
+                    for (let x = 0; x < srcCanvas.width; x++) {
+                        const idx = (y * srcCanvas.width + x) * 4;
+                        if (imgData[idx] < 128) { // black module pixel
+                            if (x > maxX) maxX = x;
+                            if (y > maxY) maxY = y;
+                        }
+                    }
+                }
+                const cropSize = Math.max(maxX, maxY) + 1;
+                const pad = 24;
+                const finalCanvas = document.createElement('canvas');
+                finalCanvas.width = cropSize + pad * 2;
+                finalCanvas.height = cropSize + pad * 2;
+                const fCtx = finalCanvas.getContext('2d');
+                fCtx.fillStyle = '#FFFFFF';
+                fCtx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+                fCtx.drawImage(srcCanvas, 0, 0, cropSize, cropSize, pad, pad, cropSize, cropSize);
+
                 qrImage.removeAttribute('crossOrigin');
-                qrImage.src = qr.toDataURL('image/png');
+                qrImage.src = finalCanvas.toDataURL('image/png');
             } else {
                 const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(encodedUrl)}`;
                 qrImage.src = qrApiUrl;

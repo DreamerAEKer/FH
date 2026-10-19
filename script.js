@@ -9,6 +9,7 @@ window.onload = function() {
     }
 
     let memberId = urlParams.get('id') || urlParams.get('user');
+    let referrerName = urlParams.get('name');
     
     if (memberId) {
         // Strip THP- if present in URL
@@ -24,7 +25,7 @@ window.onload = function() {
         const referrerInfo = document.getElementById('referrer-info');
         
         if (referrerDisplay && referrerInfo) {
-            referrerDisplay.innerText = memberId;
+            referrerDisplay.innerText = referrerName || memberId;
             referrerInfo.style.display = 'block';
         }
 

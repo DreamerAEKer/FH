@@ -42,11 +42,11 @@
         }
         #qr-image {
             background: white;
-            padding: 15px;
-            border: 1px solid #DDD;
-            margin: 15px 0;
-            width: 200px;
-            height: 200px;
+            padding: 8px;
+            border-radius: 12px;
+            width: 210px;
+            height: 210px;
+            display: block;
         }
         .result-link {
             background: #F3F4F6;
@@ -57,8 +57,232 @@
             margin: 10px 0;
             color: var(--secondary-blue);
         }
+        /* Theme Selector Buttons */
+        .theme-selector {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 12px 0 5px;
+        }
+        .theme-btn {
+            border: 2px solid #E5E7EB;
+            background: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-family: 'Anuphan', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .theme-btn:hover {
+            border-color: #D1D5DB;
+            transform: translateY(-1px);
+        }
+        .theme-btn.active {
+            border-color: #E31E24;
+            background: #FEF2F2;
+            color: #E31E24;
+            font-weight: 600;
+        }
+
+        /* Decorative QR Card Styles */
+        #qr-frame-container {
+            position: relative;
+            overflow: hidden;
+            max-width: 340px;
+            margin: 20px auto;
+            border-radius: 24px;
+            padding: 24px 20px 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+            font-family: 'Anuphan', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        /* Theme 1: Airmail Classic (Default) */
+        .theme-airmail {
+            background-color: #FFFDF9;
+            background-image: radial-gradient(#E31E24 0.75px, transparent 0.75px), radial-gradient(#1E3A8A 0.75px, #FFFDF9 0.75px);
+            background-size: 24px 24px;
+            background-position: 0 0, 12px 12px;
+            border: 12px solid transparent;
+            background-clip: padding-box;
+            box-shadow: 0 0 0 10px #E31E24, 0 10px 25px rgba(0,0,0,0.15) !important;
+        }
+        .theme-airmail::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 8px;
+            background: repeating-linear-gradient(
+                -45deg,
+                #E31E24,
+                #E31E24 12px,
+                #FFFFFF 12px,
+                #FFFFFF 20px,
+                #1E3A8A 20px,
+                #1E3A8A 32px,
+                #FFFFFF 32px,
+                #FFFFFF 40px
+            );
+        }
+        .theme-airmail::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0; height: 8px;
+            background: repeating-linear-gradient(
+                -45deg,
+                #E31E24,
+                #E31E24 12px,
+                #FFFFFF 12px,
+                #FFFFFF 20px,
+                #1E3A8A 20px,
+                #1E3A8A 32px,
+                #FFFFFF 32px,
+                #FFFFFF 40px
+            );
+        }
+
+        /* Theme 2: Red Polka Dot */
+        .theme-polka {
+            background-color: #FFF5F5;
+            background-image: radial-gradient(rgba(227, 30, 36, 0.14) 2px, transparent 2px), radial-gradient(rgba(227, 30, 36, 0.08) 2px, #FFF5F5 2px);
+            background-size: 28px 28px;
+            background-position: 0 0, 14px 14px;
+            border: 14px solid #E31E24;
+        }
+
+        /* Theme 3: Modern Blue Wave */
+        .theme-blue {
+            background: linear-gradient(145deg, #EFF6FF 0%, #DBEAFE 50%, #FEF2F2 100%);
+            border: 14px solid #1E3A8A;
+        }
+
+        /* Theme 4: Luxury Gold & Red */
+        .theme-gold {
+            background-color: #FFFBEB;
+            background-image: linear-gradient(30deg, rgba(245, 158, 11, 0.08) 12%, transparent 12.5%, transparent 87%, rgba(245, 158, 11, 0.08) 87.5%, rgba(245, 158, 11, 0.08)),
+                              linear-gradient(150deg, rgba(245, 158, 11, 0.08) 12%, transparent 12.5%, transparent 87%, rgba(245, 158, 11, 0.08) 87.5%, rgba(245, 158, 11, 0.08));
+            background-size: 26px 46px;
+            border: 14px solid #B91C1C;
+        }
+
+        /* Theme 5: Minimal Pastel */
+        .theme-pastel {
+            background: linear-gradient(135deg, #FFF1F2 0%, #FFF7ED 50%, #F0FDF4 100%);
+            border: 14px solid #F43F5E;
+        }
+
+        /* Decorative Floating Watermarks inside Card */
+        .card-deco {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0.12;
+            font-size: 42px;
+            line-height: 1;
+            z-index: 0;
+        }
+        .deco-tl { top: 14px; left: 12px; transform: rotate(-15deg); }
+        .deco-tr { top: 14px; right: 12px; transform: rotate(15deg); }
+        .deco-bl { bottom: 55px; left: 10px; transform: rotate(12deg); font-size: 34px; }
+        .deco-br { bottom: 55px; right: 10px; transform: rotate(-12deg); font-size: 34px; }
+
+        .qr-card-content {
+            position: relative;
+            z-index: 1;
+        }
+        .qr-brand-pill {
+            display: inline-block;
+            background: white;
+            padding: 3px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 800;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            margin-bottom: 6px;
+            border: 1px solid rgba(227, 30, 36, 0.2);
+        }
+        .qr-brand-pill .p-red { color: #E31E24; }
+        .qr-brand-pill .p-blue { color: #1E3A8A; font-style: italic; margin-left: 2px; }
+
+        .qr-title {
+            color: #E31E24;
+            font-weight: 800;
+            font-size: 21px;
+            margin-bottom: 4px;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+        }
+        .theme-blue .qr-title { color: #1E3A8A; }
+
+        .qr-subtitle {
+            font-size: 12px;
+            color: #4B5563;
+            background: rgba(255,255,255,0.85);
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        /* QR Box with Scanner Corner Accents */
+        .qr-box-wrapper {
+            position: relative;
+            background: white;
+            padding: 12px;
+            border-radius: 18px;
+            display: inline-block;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            border: 2px dashed rgba(227, 30, 36, 0.25);
+        }
+        .theme-blue .qr-box-wrapper {
+            border-color: rgba(30, 58, 138, 0.25);
+        }
+        .corner-acc {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-color: #E31E24;
+            border-style: solid;
+        }
+        .theme-blue .corner-acc { border-color: #1E3A8A; }
+        .c-tl { top: -2px; left: -2px; border-width: 4px 0 0 4px; border-top-left-radius: 12px; }
+        .c-tr { top: -2px; right: -2px; border-width: 4px 4px 0 0; border-top-right-radius: 12px; }
+        .c-bl { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; border-bottom-left-radius: 12px; }
+        .c-br { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; border-bottom-right-radius: 12px; }
+
+        .qr-footer-badge {
+            margin-top: 14px;
+            background: white;
+            border-radius: 14px;
+            padding: 10px 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            border: 1px solid #F3F4F6;
+        }
+        #qr-recipient {
+            color: #1F2937;
+            font-size: 14.5px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+        #qr-member-badge {
+            margin-top: 4px;
+            font-size: 12px;
+            color: #6B7280;
+            font-weight: 600;
+        }
+        #qr-member-badge span {
+            color: #E31E24;
+            background: #FEF2F2;
+            padding: 1px 8px;
+            border-radius: 8px;
+            font-weight: 700;
+        }
+
         @media print {
-            .no-print, header, .generator-card h2, .generator-card p:first-of-type, .input-group, .main-btn, h3, .result-link, p {
+            .no-print, header, .generator-card h2, .generator-card p:first-of-type, .input-group, .main-btn, h3, .result-link, .theme-selector, .theme-label {
                 display: none !important;
             }
             body, .container, main {
@@ -80,8 +304,7 @@
                 border: none !important;
             }
             #qr-frame-container {
-                margin: 0 auto !important;
-                box-shadow: none !important;
+                margin: 20px auto !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
@@ -120,19 +343,51 @@
 
                 <div id="qr-result">
                     <h3>QR Code ของคุณพร้อมแล้ว!</h3>
-                    <p>สแกนเพื่อทดสอบ หรือบันทึกภาพไปใช้งานด้านล่างได้เลย</p>
+                    <p class="no-print">สแกนเพื่อทดสอบ หรือเลือกลวดลายกรอบด้านล่างได้เลย</p>
                     
                     <div class="result-link" id="final-link"></div>
+
+                    <div class="no-print" style="margin-top: 12px;">
+                        <div class="theme-label" style="font-size: 13px; font-weight: 600; color: #4B5563;">🎨 เลือกลวดลายกรอบ QR Code:</div>
+                        <div class="theme-selector">
+                            <button type="button" class="theme-btn active" onclick="setCardTheme('theme-airmail', this)">📮 ไปรษณีย์</button>
+                            <button type="button" class="theme-btn" onclick="setCardTheme('theme-polka', this)">🔴 ลายจุด</button>
+                            <button type="button" class="theme-btn" onclick="setCardTheme('theme-blue', this)">💙 บลูสกาย</button>
+                            <button type="button" class="theme-btn" onclick="setCardTheme('theme-gold', this)">✨ เรดโกลด์</button>
+                            <button type="button" class="theme-btn" onclick="setCardTheme('theme-pastel', this)">🌸 พาสเทล</button>
+                        </div>
+                    </div>
                     
                     <!-- QR Frame Container -->
-                    <div id="qr-frame-container" style="background: white; padding: 20px; border: 15px solid #E31E24; border-radius: 20px; max-width: 320px; margin: 25px auto; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-                        <div style="color: #E31E24; font-weight: 800; font-size: 20px; margin-bottom: 10px; font-family: 'Anuphan', sans-serif;">สมัครสมาชิก Post Family</div>
-                        
-                        <div style="background: white; padding: 10px; display: inline-block;">
-                            <img id="qr-image" src="" alt="QR Code" style="width: 220px; height: 220px; display: block;">
-                        </div>
+                    <div id="qr-frame-container" class="theme-airmail">
+                        <!-- Background Watermark Icons -->
+                        <div class="card-deco deco-tl" id="deco-1">✉️</div>
+                        <div class="card-deco deco-tr" id="deco-2">📦</div>
+                        <div class="card-deco deco-bl" id="deco-3">🎁</div>
+                        <div class="card-deco deco-br" id="deco-4">❤️</div>
 
-                        <div id="qr-recipient" style="margin-top: 10px; color: #666; font-size: 14px; border-top: 1px solid #EEE; padding-top: 8px;"></div>
+                        <div class="qr-card-content">
+                            <div class="qr-brand-pill">
+                                <span class="p-red">POST</span><span class="p-blue">Family</span>
+                            </div>
+                            <div class="qr-title">สมัครสมาชิก Post Family</div>
+                            <div class="qr-subtitle">📱 สแกนเพื่อรับสิทธิพิเศษทันที</div>
+                            
+                            <div>
+                                <div class="qr-box-wrapper">
+                                    <div class="corner-acc c-tl"></div>
+                                    <div class="corner-acc c-tr"></div>
+                                    <div class="corner-acc c-bl"></div>
+                                    <div class="corner-acc c-br"></div>
+                                    <img id="qr-image" src="" alt="QR Code">
+                                </div>
+                            </div>
+
+                            <div class="qr-footer-badge">
+                                <div id="qr-recipient"></div>
+                                <div id="qr-member-badge">รหัสผู้แนะนำ: <span id="qr-member-code"></span> | ปณ. <span>10501</span></div>
+                            </div>
+                        </div>
                     </div>
                     
                     <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px; justify-content: center;" class="no-print">
@@ -148,6 +403,29 @@
     </div>
 
     <script>
+        const themeIcons = {
+            'theme-airmail': ['✉️', '📦', '📮', '❤️'],
+            'theme-polka': ['🎁', '✨', '🎈', '❤️'],
+            'theme-blue': ['☁️', '📦', '💎', '✨'],
+            'theme-gold': ['👑', '✨', '🌟', '🎁'],
+            'theme-pastel': ['🌸', '🌷', '✨', '💖']
+        };
+
+        function setCardTheme(themeClass, btnEl) {
+            const container = document.getElementById('qr-frame-container');
+            container.className = themeClass;
+
+            const buttons = document.querySelectorAll('.theme-btn');
+            buttons.forEach(b => b.classList.remove('active'));
+            if (btnEl) btnEl.classList.add('active');
+
+            const icons = themeIcons[themeClass] || themeIcons['theme-airmail'];
+            document.getElementById('deco-1').innerText = icons[0];
+            document.getElementById('deco-2').innerText = icons[1];
+            document.getElementById('deco-3').innerText = icons[2];
+            document.getElementById('deco-4').innerText = icons[3];
+        }
+
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const user = urlParams.get('user') || urlParams.get('id');
@@ -165,25 +443,31 @@
             const qrImage = document.getElementById('qr-image');
             const finalLinkDiv = document.getElementById('final-link');
             const qrRecipient = document.getElementById('qr-recipient');
+            const qrMemberCode = document.getElementById('qr-member-code');
 
             if (!baseUrl || !memberId) {
                 alert('โปรดกรอกข้อมูลให้ครบถ้วนครับ');
                 return;
             }
 
+            const cleanId = memberId.trim().replace(/^THP-/i, '');
+
             // Create final URL
-            let finalUrl = `${baseUrl}?user=${memberId.trim()}`;
+            let finalUrl = `${baseUrl}?user=${cleanId}`;
             if (displayName.trim()) {
                 finalUrl += `&name=${displayName.trim()}`;
             }
             finalLinkDiv.innerText = finalUrl;
 
-            // Update Display Name if provided
+            // Update Display Name and Member ID Badge
             if (displayName.trim()) {
                 qrRecipient.innerText = `ผู้แนะนำ: ${displayName.trim()}`;
                 qrRecipient.style.display = 'block';
             } else {
                 qrRecipient.style.display = 'none';
+            }
+            if (qrMemberCode) {
+                qrMemberCode.innerText = `THP-${cleanId}`;
             }
 
             // Generate QR using API and convert to Data URL to avoid file:// CORS issues with html2canvas

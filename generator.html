@@ -173,10 +173,13 @@
 
             // Create final URL
             let finalUrl = `${baseUrl}?user=${encodeURIComponent(memberId.trim())}`;
+            let readableUrl = `${baseUrl}?user=${memberId.trim()}`;
             if (displayName.trim()) {
                 finalUrl += `&name=${encodeURIComponent(displayName.trim())}`;
+                readableUrl += `&name=${displayName.trim()}`;
             }
-            finalLinkDiv.innerText = finalUrl;
+            finalLinkDiv.innerText = readableUrl;
+            finalLinkDiv.dataset.url = finalUrl;
 
             // Update Display Name if provided
             if (displayName.trim()) {

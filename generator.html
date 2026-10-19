@@ -186,11 +186,23 @@
                 qrRecipient.style.display = 'none';
             }
 
-            // Generate QR using API
-            // Add use-origin for CORS compatibility with html2canvas if needed
+            // Generate QR using API and convert to Data URL to avoid file:// CORS issues with html2canvas
             const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(finalUrl)}`;
-            qrImage.crossOrigin = "anonymous"; 
-            qrImage.src = qrApiUrl;
+            
+            fetch(qrApiUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    const reader = new FileReader();
+                    reader.onloadend = function() {
+                        qrImage.removeAttribute('crossOrigin');
+                        qrImage.src = reader.result;
+                    };
+                    reader.readAsDataURL(blob);
+                })
+                .catch(() => {
+                    qrImage.crossOrigin = "anonymous";
+                    qrImage.src = qrApiUrl;
+                });
 
             qrResult.style.display = 'block';
             
@@ -198,37 +210,53 @@
             qrResult.scrollIntoView({ behavior: 'smooth' });
         }
 
-        function downloadQRAsImage() {
+        async function downloadQRAsImage() {
             const element = document.getElementById('qr-frame-container');
+            const qrImage = document.getElementById('qr-image');
             const memberId = document.getElementById('member-id').value || 'qr';
             const displayName = document.getElementById('display-name').value || '';
             
-            // Show loading state or alert
+            // Show loading state
             const btn = event.target;
             const originalText = btn.innerText;
             btn.innerText = 'กำลังประมวลผล...';
             btn.disabled = true;
 
-            html2canvas(element, {
-                useCORS: true,
-                scale: 2, // Better quality
-                backgroundColor: null,
-                logging: false
-            }).then(canvas => {
+            try {
+                // Ensure qrImage is a data URL before capturing
+                if (qrImage.src && !qrImage.src.startsWith('data:')) {
+                    const response = await fetch(qrImage.src);
+                    const blob = await response.blob();
+                    const dataUrl = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve(reader.result);
+                        reader.readAsDataURL(blob);
+                    });
+                    qrImage.removeAttribute('crossOrigin');
+                    qrImage.src = dataUrl;
+                    await new Promise(r => setTimeout(r, 100));
+                }
+
+                const canvas = await html2canvas(element, {
+                    useCORS: true,
+                    allowTaint: true,
+                    scale: 2, // Better quality
+                    backgroundColor: null,
+                    logging: false
+                });
+
                 const link = document.createElement('a');
                 const filename = displayName ? `QR_${displayName}.png` : `QR_${memberId}.png`;
                 link.download = filename;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
-                
-                btn.innerText = originalText;
-                btn.disabled = false;
-            }).catch(err => {
+            } catch (err) {
                 console.error('Error generating image:', err);
                 alert('เกิดข้อผิดพลาดในการสร้างรูปภาพครับ');
+            } finally {
                 btn.innerText = originalText;
                 btn.disabled = false;
-            });
+            }
         }
 
         function copyGeneratedLink() {

@@ -112,7 +112,7 @@
                 </div>
 
                 <div class="input-group">
-                    <label>ชื่อผู้รับ (เพื่อระบุตัวตนบนใบ QR):</label>
+                    <label>ชื่อผู้แนะนำ (เพื่อระบุตัวตนบนใบ QR):</label>
                     <input type="text" id="display-name" placeholder="ตัวอย่าง: กุ๊กไก่, สมชาย (แผนกขนส่ง)" maxlength="30">
                 </div>
 
@@ -171,13 +171,16 @@
                 return;
             }
 
-            // Create final URL (Always use ?user= as per simplified requirement)
-            const finalUrl = `${baseUrl}?user=${memberId}`;
+            // Create final URL
+            let finalUrl = `${baseUrl}?user=${encodeURIComponent(memberId.trim())}`;
+            if (displayName.trim()) {
+                finalUrl += `&name=${encodeURIComponent(displayName.trim())}`;
+            }
             finalLinkDiv.innerText = finalUrl;
 
             // Update Display Name if provided
-            if (displayName) {
-                qrRecipient.innerText = `ผู้รับ: ${displayName}`;
+            if (displayName.trim()) {
+                qrRecipient.innerText = `ผู้แนะนำ: ${displayName.trim()}`;
                 qrRecipient.style.display = 'block';
             } else {
                 qrRecipient.style.display = 'none';
